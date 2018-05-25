@@ -1,6 +1,6 @@
 {
   "name": "rn-detect-soft-nav",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Listen for visiblity changes on the Android soft navigation bar in React Native and respond accordingly.",
   "main": "index.js",
   "scripts": {
