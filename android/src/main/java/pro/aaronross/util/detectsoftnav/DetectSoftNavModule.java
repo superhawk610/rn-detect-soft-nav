@@ -1,6 +1,7 @@
 package pro.aaronross.util.detectsoftnav;
 
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 
 import com.facebook.react.bridge.Arguments;
@@ -38,6 +39,12 @@ public class DetectSoftNavModule extends ReactContextBaseJavaModule {
                         sendEvent(mContext, (visibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0 ? "softNavDidShow" : "softNavDidHide", params);
                     }
                 });
+
+                // flicker SYSTEM_UI_FLAG_HIDE_NAVIGATION so that isVisible calls will detect the right value
+                // don't ask, it works ;)
+                int uiOptions = decorView.getSystemUiVisibility();
+                decorView.setSystemUiVisibility(uiOptions | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+                decorView.setSystemUiVisibility(uiOptions);
             }
         });
         _init = true;
@@ -45,9 +52,8 @@ public class DetectSoftNavModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void isVisible(final Callback callback) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) callback.invoke(true);
-
-        int visibility = getCurrentActivity().getWindow().getDecorView().getSystemUiVisibility();
+        View decorView = getCurrentActivity().getWindow().getDecorView().getRootView();
+        int visibility = decorView.getSystemUiVisibility();
         callback.invoke((visibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0);
     }
 
